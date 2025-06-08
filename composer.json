@@ -1,0 +1,20 @@
+{
+    "name": "realphp/swagger-php-plus",
+    "description": "auto genergate swagger doc",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "RealPHP\\SwaggerPhpPlus\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "zhangxiaojun"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "zircote/swagger-php": "^5.0@dev"
+    }
+}
