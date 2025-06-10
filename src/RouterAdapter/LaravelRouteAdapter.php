@@ -2,8 +2,6 @@
 
 namespace RealPHP\SwaggerPhpPlus\RouterAdapter;
 
-use RealPHP\SwaggerPhpPlus\RouteInfo;
-
 class LaravelRouteAdapter implements RouterAdapterInterface
 {
     public function getRoutes(): array
@@ -21,7 +19,7 @@ class LaravelRouteAdapter implements RouterAdapterInterface
                     path: $route->uri(),
                     httpMethod: implode('|', $route->methods()),
                     controller: $controller,
-                    action: $action,
+                    method: $action,
                     parameters: $route->wheres
                 );
             }

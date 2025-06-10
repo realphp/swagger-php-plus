@@ -2,16 +2,18 @@
 
 namespace RealPHP\SwaggerPhpPlus\Processors;
 
+use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use OpenApi\Analysis;
 use OpenApi\Annotations\Operation;
 use OpenApi\Attributes\Get;
-use OpenApi\Attributes\Response;
-use OpenApi\Attributes\Schema;
 use OpenApi\Attributes\Parameter;
 use OpenApi\Attributes\PathItem;
-use RealPHP\SwaggerPhpPlus\RouteInfo;
+use OpenApi\Attributes\Response;
+use OpenApi\Attributes\Schema;
+use RealPHP\SwaggerPhpPlus\RouterAdapter\RouteInfo;
 use RealPHP\SwaggerPhpPlus\RouterAdapter\RouterAdapterInterface;
 use RealPHP\SwaggerPhpPlus\RouterAdapterFactory;
+use ReflectionClass;
 
 class UniversalRouteProcessor
 {
@@ -25,7 +27,7 @@ class UniversalRouteProcessor
     public function __invoke(Analysis $analysis): void
     {
         // 1. 处理手动声明的路由注解
-        $this->processManualAnnotations($analysis);
+//        $this->processManualAnnotations($analysis);
 
         // 2. 自动添加未声明的路由
         $this->addMissingRoutes($analysis);
@@ -102,26 +104,21 @@ class UniversalRouteProcessor
         $allRoutes = $this->adapter->getRoutes();
 
         foreach ($allRoutes as $route) {
-            $routeKey = "{$route->controller}::{$route->action}";
+            $routeKey = "{$route->controller}::{$route->method}";
 
-            if (!isset($existingRoutes[$routeKey])) {
+            if ($this->analysisRoute($route)) {
                 $this->addRouteToAnalysis($route, $analysis);
             }
         }
     }
 
-    private function getExistingRoutes(Analysis $analysis): array
+    private function analysisRoute(RouteInfo $route): bool
     {
-        $routes = [];
-
-        foreach ($analysis->annotations as $annotation) {
-            if ($annotation instanceof Operation) {
-                $routes["{$annotation->_context->class}::{$annotation->_context->method}"] = true;
-            }
+        if (!$this->doesControllerMethodExist($route)) {
+            return false;
         }
-
-        return $routes;
     }
+
 
     private function addRouteToAnalysis(RouteInfo $route, Analysis $analysis)
     {
@@ -162,5 +159,15 @@ class UniversalRouteProcessor
             'array' => 'array',
             default => 'string'
         };
+    }
+
+    private function doesControllerMethodExist(RouteInfo $routeInfo)
+    {
+        $reflection = new ReflectionClass($routeInfo->controller);
+
+        if ($reflection->hasMethod($routeInfo->method)) {
+            return true;
+        }
+        return false;
     }
 }

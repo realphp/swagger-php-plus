@@ -2,8 +2,6 @@
 
 namespace RealPHP\SwaggerPhpPlus\RouterAdapter;
 
-use RealPHP\SwaggerPhpPlus\RouteInfo;
-
 interface RouterAdapterInterface
 {
     /**

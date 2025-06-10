@@ -21,10 +21,22 @@ class QueryStringRouteAdapter implements RouterAdapterInterface
 
     public function getRoutes(): array
     {
-        // 对于查询字符串路由，通常没有集中注册，需要扫描控制器
-        $controllerDir = config('swagger.controller_dir', 'app/Controllers');
-        $scanner = new ControllerScanner($controllerDir);
-        return $scanner->scan();
+
+        $routes[] = new RouteInfo(
+            path: '', // 将在适配器中填充
+            httpMethod: 'get',
+            controller: 'IndexController',
+            method: 'index',
+            parameters: []
+        );
+        $routes[] = new RouteInfo(
+            path: '', // 将在适配器中填充
+            httpMethod: 'post',
+            controller: 'IndexController2xx',
+            method: 'save',
+            parameters: []
+        );
+        return $routes;
     }
 
     public function convertPath(string $logicalPath, string $controller, string $action): string
