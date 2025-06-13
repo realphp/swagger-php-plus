@@ -32,7 +32,6 @@ class FastRouteMatcher implements RouteMatcherInterface
                 );
             }
         }
-        dd($routeInfos);
         return $routeInfos;
     }
 
