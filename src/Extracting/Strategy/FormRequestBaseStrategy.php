@@ -9,7 +9,7 @@ use RealPHP\SwaggerPhpPlus\Extracting\Strategy\Traits\FindsFormRequestForMethod;
 use RealPHP\SwaggerPhpPlus\Extracting\Strategy\Traits\ParsesValidationRules;
 use RealPHP\SwaggerPhpPlus\RouteMatching\RouteInfo;
 
-class FormRequestStrategyBase extends Strategy
+class FormRequestBaseStrategy extends Strategy
 {
     use ParsesValidationRules, FindsFormRequestForMethod;
 

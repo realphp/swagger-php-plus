@@ -6,6 +6,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Knuckles\Camel\Extraction\Parameter;
 use Knuckles\Scribe\Extracting\Strategies\StaticData;
+use RealPHP\SwaggerPhpPlus\Config\Defaults;
 use RealPHP\SwaggerPhpPlus\RouteMatching\RouteInfo;
 
 class RouteExtractor
@@ -40,7 +41,9 @@ class RouteExtractor
      */
     protected function iterateThroughStrategies(string $stage, RouteInfo $routeInfo, array $rulesToApply, callable $handler): void
     {
-        $strategies = $this->config->get("strategies.$stage", []);
+        //TODO
+//        $strategies = $this->config->get("strategies.$stage", []);
+        $strategies = Defaults::QUERY_PARAMETERS_STRATEGIES;
         foreach ($strategies as $strategyClassOrTuple) {
             if (is_array($strategyClassOrTuple)) {
                 [$strategyClass, &$settings] = $strategyClassOrTuple;

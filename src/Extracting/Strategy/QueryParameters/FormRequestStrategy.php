@@ -2,9 +2,9 @@
 
 namespace RealPHP\SwaggerPhpPlus\Extracting\Strategy\QueryParameters;
 
-use RealPHP\SwaggerPhpPlus\Extracting\Strategy\FormRequestStrategyBase;
+use RealPHP\SwaggerPhpPlus\Extracting\Strategy\FormRequestBaseStrategy;
 
-class FormRequestStrategy extends FormRequestStrategyBase
+class FormRequestStrategy extends FormRequestBaseStrategy
 {
     protected string $customParameterDataMethodName = 'queryParameters';
 }
