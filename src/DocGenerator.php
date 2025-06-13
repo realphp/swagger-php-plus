@@ -1,11 +1,11 @@
 <?php
 
-use Knuckles\Camel\Extraction\Parameter;
+namespace RealPHP\SwaggerPhpPlus;
+
+use OpenApi\Generator;
 use Psr\Log\LoggerInterface;
 use RealPHP\SwaggerPhpPlus\Contracts\RouteMatcherInterface;
 use RealPHP\SwaggerPhpPlus\Processors\InjectRoutesProcessor;
-use RealPHP\SwaggerPhpPlus\Processors\RouteProcessor;
-use OpenApi\Generator;
 use RealPHP\SwaggerPhpPlus\RouteMatching\RouteInfo;
 
 class DocGenerator extends Generator
@@ -13,8 +13,8 @@ class DocGenerator extends Generator
     private RouteMatcherInterface $routeMatcher;
 
     public function __construct(
-        ?LoggerInterface      $logger = null,
-        RouteMatcherInterface $routeMatcher
+        RouteMatcherInterface $routeMatcher,
+        ?LoggerInterface      $logger = null
     )
     {
         parent::__construct($logger);

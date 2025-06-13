@@ -2,6 +2,7 @@
 
 namespace RealPHP\SwaggerPhpPlus\RouteMatching;
 
+use Illuminate\Support\Facades\Route as RouteFacade;
 use RealPHP\SwaggerPhpPlus\Contracts\RouteMatcherInterface;
 
 class LaravelRouteMatcher implements RouteMatcherInterface
@@ -12,7 +13,12 @@ class LaravelRouteMatcher implements RouteMatcherInterface
      */
     public function getRoutes(array $routeRules = []): array
     {
-        return [];
+        return [
+        ];
     }
 
+    private function getAllRoutes()
+    {
+        return RouteFacade::getRoutes();
+    }
 }
