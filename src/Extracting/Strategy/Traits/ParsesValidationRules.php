@@ -27,7 +27,7 @@ trait ParsesValidationRules
     public function getParametersFromValidationRules(array $validationRulesByParameters, array $customParameterData = []): array
     {
         self::$MISSING_VALUE = new \stdClass();
-        $validationRulesByParameters = $this->normaliseRules($validationRulesByParameters);
+//        $validationRulesByParameters = $this->normaliseRules($validationRulesByParameters);
 
         $parameters = [];
         $rulesWhichDependOnType = ['between', 'max', 'min', 'size', 'gt', 'gte', 'lt', 'lte', 'before', 'after', 'before_or_equal', 'after_or_equal'];
@@ -136,7 +136,6 @@ trait ParsesValidationRules
                 throw ProblemParsingValidationRules::forParam($parameter, $e);
             }
         }
-
         return $parameters;
     }
 

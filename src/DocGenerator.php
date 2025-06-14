@@ -40,6 +40,7 @@ class DocGenerator extends Generator
         foreach ($routes as $route) {
             $routeExtractor->processRoute($route);
         }
+        return $routes;
     }
 
 

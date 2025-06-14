@@ -2,7 +2,8 @@
 
 namespace RealPHP\SwaggerPhpPlus\Extracting\Strategy\Traits;
 
-use Illuminate\Foundation\Http\FormRequest;
+//use Illuminate\Foundation\Http\FormRequest;
+use Framework\Model\RequestForm\RequestForm;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionFunctionAbstract;
@@ -25,8 +26,7 @@ trait FindsFormRequestForMethod
             } catch (ReflectionException $e) {
                 continue;
             }
-
-            if ($argumentClass->isSubclassOf(FormRequest::class)) {
+            if ($argumentClass->getName() === \Framework\Http\Request::class || $argumentClass->isSubclassOf(\Framework\Http\Request::class)) {
                 return $argumentClass;
             }
         }

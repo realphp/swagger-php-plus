@@ -14,6 +14,7 @@ class RouteExtractor
     public function processRoute(RouteInfo $route, array $routeRules = []): RouteInfo
     {
         $this->fetchQueryParameters($route, $routeRules);
+        return $route;
     }
 
     protected function fetchQueryParameters(RouteInfo $routeInfo, array $rulesToApply): void
@@ -58,8 +59,8 @@ class RouteExtractor
 //            if ($this->shouldSkipRoute($routeInfo->route, $routesToExclude, $routesToInclude)) {
 //                continue;
 //            }
-
-            $strategy = new $strategyClass($this->config);
+//TODO $this->>config
+            $strategy = new $strategyClass([]);
             $results = $strategy($routeInfo, $settings);
             if (is_array($results)) {
                 $handler($results);
