@@ -18,23 +18,33 @@ class InjectRoutesProcessor
     public function __invoke(Analysis $analysis): void
     {
         // 为每个路径创建PathItem
-        foreach ($this->routes as $path => $route) {
+        foreach ($this->routes as $route) {
             $pathItem = $this->createPathItem($route);
-            $analysis->addAnnotation($pathItem, $analysis->context);
+            $analysis->addAnnotation($pathItem, $pathItem->_context);
+        }
+    }
+
+    private function logDuplicatePath(Analysis $analysis, string $path): void
+    {
+        $context = $analysis->_context;
+        if ($context && $context->logger) {
+            $context->logger->warning(sprintf(
+                '[InjectRoutes] Skipping duplicate path: %s',
+                $path
+            ));
         }
     }
 
     protected function createPathItem(RouteInfo $route): \OpenApi\Attributes\PathItem
     {
         $pathItem = new \OpenApi\Attributes\PathItem(path: $route->uri);
-        $method = strtolower($route->httpMethod[0]);
-        $operation = $this->createOperation($route, $method);
-        // 使用反射动态设置属性
-        $reflection = new \ReflectionClass($pathItem);
-        if ($reflection->hasProperty($method)) {
-            $property = $reflection->getProperty($method);
-            $property->setAccessible(true);
-            $property->setValue($pathItem, $operation);
+        foreach ($route->httpMethod as $httpMethod) {
+            $method = strtolower($httpMethod);
+            if (!in_array($method, ['get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'trace'])) {
+                continue;
+            }
+            $operation = $this->createOperation($route, $method);
+            $pathItem->{$method} = $operation;
         }
         return $pathItem;
     }
@@ -53,7 +63,7 @@ class InjectRoutesProcessor
         };
 
         return new $operationClass(
-            operationId: $route->uri . '-' . $method,
+            operationId: $this->generateOperationId($route, $method),
             responses: [
                 '200' => new \OpenApi\Attributes\Response(description: 'OK'),
                 '400' => new \OpenApi\Attributes\Response(description: 'Bad Request'),
@@ -64,5 +74,13 @@ class InjectRoutesProcessor
         // description: $route->description,
         // summary: $route->summary,
         );
+    }
+
+    protected function generateOperationId(RouteInfo $route, string $method): string
+    {
+        // 生成更规范的operationId
+        $path = trim($route->uri, '/');
+        $path = str_replace(['/', '{', '}'], ['-', '', ''], $path);
+        return $path . '-' . $method;
     }
 }

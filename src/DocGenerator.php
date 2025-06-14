@@ -12,6 +12,7 @@ use RealPHP\SwaggerPhpPlus\RouteMatching\RouteInfo;
 class DocGenerator extends Generator
 {
     private RouteMatcherInterface $routeMatcher;
+    private bool $routesProcessed = false;
 
     public function __construct(
         RouteMatcherInterface $routeMatcher,
@@ -20,28 +21,65 @@ class DocGenerator extends Generator
     {
         parent::__construct($logger);
         $this->routeMatcher = $routeMatcher;
+        $this->routeExtractor = new RouteExtractor();
         $this->addRouteProcessor();
     }
 
-    private function addRouteProcessor()
+    public function generate(iterable $sources, ?\OpenApi\Analysis $analysis = null, bool $validate = true): ?\OpenApi\Annotations\OpenApi
     {
-        $routes = $this->extractRoutes();
-        $this->getProcessorPipeline()
-            ->add(new InjectRoutesProcessor($routes));
+        // 确保在生成前添加路由处理器
+        if (!$this->routesProcessed) {
+            $this->addRouteProcessor();
+            $this->routesProcessed = true;
+        }
+
+        return parent::generate($sources, $analysis, $validate);
     }
 
+    private function addRouteProcessor(): void
+    {
+        $routes = $this->extractRoutes();
+        $pipeline = $this->getProcessorPipeline();
+        // 创建路由处理器
+        $routeProcessor = new InjectRoutesProcessor($routes);
+        // 使用 insert 方法将处理器添加到最前面
+        $pipeline->insert($routeProcessor, function(array $pipes) {
+            // 始终插入到管道最前面
+            return 0;
+        });
+    }
     /**
      * @return RouteInfo[]|array
      */
-    private function extractRoutes()
+    /**
+     * @return RouteInfo[]
+     */
+    private function extractRoutes(): array
     {
-        $routes = $this->routeMatcher->getRoutes();
-        $routeExtractor = new RouteExtractor();
-        foreach ($routes as $route) {
-            $routeExtractor->processRoute($route);
+        $rawRoutes = $this->routeMatcher->getRoutes();
+
+        $this->log(sprintf('Found %d raw routes from matcher', count($rawRoutes)));
+
+        $processedRoutes = [];
+        foreach ($rawRoutes as $route) {
+            $processedRoute = $this->routeExtractor->processRoute($route);
+
+            if ($processedRoute instanceof RouteInfo) {
+                $processedRoutes[] = $processedRoute;
+            } else {
+                $this->log('Route extraction failed for: ' . get_class($route), 'warning');
+            }
+            break;
         }
-        return $routes;
+
+        return $processedRoutes;
     }
 
+    private function log(string $message, string $level = 'info'): void
+    {
+        if ($this->logger) {
+            $this->logger->log($level, '[SwaggerPhpPlus] ' . $message);
+        }
+    }
 
 }
