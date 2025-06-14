@@ -33,6 +33,7 @@ trait ParsesValidationRules
         $rulesWhichDependOnType = ['between', 'max', 'min', 'size', 'gt', 'gte', 'lt', 'lte', 'before', 'after', 'before_or_equal', 'after_or_equal'];
         foreach ($validationRulesByParameters as $parameter => $ruleset) {
             $userSpecifiedParameterInfo = $customParameterData[$parameter] ?? [];
+            $ruleset = is_string($ruleset) ? explode('|', $ruleset) : $ruleset;
             $stringRules = array_filter($ruleset, fn($rule) => is_string($rule));
             $rulesAndArguments = array_map(fn($rule) => $this->parseStringRuleIntoRuleAndArguments($rule), $stringRules);
 

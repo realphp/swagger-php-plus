@@ -45,7 +45,7 @@ class FormRequestBaseStrategy extends Strategy
 
     }
 
-    protected function getRouteValidationRules(\Framework\Http\Request $formRequest)
+    protected function getRouteValidationRules(\Framework\Model\RequestForm\RequestForm $formRequest)
     {
         if (method_exists($formRequest, 'validator')) {
             $validationFactory = app(ValidationFactory::class);
@@ -61,7 +61,7 @@ class FormRequestBaseStrategy extends Strategy
         return [];
     }
 
-    protected function getCustomParameterData(\Framework\Http\Request $formRequest)
+    protected function getCustomParameterData( \Framework\Model\RequestForm\RequestForm $formRequest)
     {
         if (method_exists($formRequest, $this->customParameterDataMethodName)) {
             return call_user_func_array([$formRequest, $this->customParameterDataMethodName], []);

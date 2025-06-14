@@ -61,9 +61,12 @@ class InjectRoutesProcessor
             'options' => \OpenApi\Attributes\Options::class,
             default => \OpenApi\Attributes\Trace::class,
         };
-
+        // 1. 创建查询参数
+        $queryParameters = $this->createQueryParameters($route);
+        // 2. 创建操作对象
         return new $operationClass(
             operationId: $this->generateOperationId($route, $method),
+            parameters: $queryParameters,
             responses: [
                 '200' => new \OpenApi\Attributes\Response(description: 'OK'),
 //                '400' => new \OpenApi\Attributes\Response(description: 'Bad Request'),
@@ -75,6 +78,37 @@ class InjectRoutesProcessor
         // summary: $route->summary,
         );
     }
+
+    /**
+     * 根据路由信息创建查询参数数组
+     */
+    protected function createQueryParameters(RouteInfo $route): array
+    {
+        $parameters = [];
+
+        foreach ($route->queryParameters as $paramName => $paramData) {
+            // 创建参数模式
+            $schema = new \OpenApi\Attributes\Schema(
+                type: $paramData['type'],
+                nullable: $paramData['nullable'],
+                example: $paramData['example'] ?? null
+            );
+
+            // 创建参数对象
+            $parameter = new \OpenApi\Attributes\Parameter(
+                name: $paramName,
+                in: 'query',
+                required: $paramData['required'],
+                description: $paramData['description'] ?: "Query parameter: $paramName",
+                schema: $schema
+            );
+
+            $parameters[] = $parameter;
+        }
+
+        return $parameters;
+    }
+
 
     protected function generateOperationId(RouteInfo $route, string $method): string
     {

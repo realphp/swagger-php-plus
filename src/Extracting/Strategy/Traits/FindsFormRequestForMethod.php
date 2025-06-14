@@ -26,7 +26,7 @@ trait FindsFormRequestForMethod
             } catch (ReflectionException $e) {
                 continue;
             }
-            if ($argumentClass->getName() === \Framework\Http\Request::class || $argumentClass->isSubclassOf(\Framework\Http\Request::class)) {
+            if ($argumentClass->getName() === \Framework\Model\RequestForm\RequestForm::class || $argumentClass->isSubclassOf(\Framework\Model\RequestForm\RequestForm::class)) {
                 return $argumentClass;
             }
         }
