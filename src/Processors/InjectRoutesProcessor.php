@@ -66,9 +66,9 @@ class InjectRoutesProcessor
             operationId: $this->generateOperationId($route, $method),
             responses: [
                 '200' => new \OpenApi\Attributes\Response(description: 'OK'),
-                '400' => new \OpenApi\Attributes\Response(description: 'Bad Request'),
-                '404' => new \OpenApi\Attributes\Response(description: 'Not Found'),
-                '500' => new \OpenApi\Attributes\Response(description: 'Server Error'),
+//                '400' => new \OpenApi\Attributes\Response(description: 'Bad Request'),
+//                '404' => new \OpenApi\Attributes\Response(description: 'Not Found'),
+//                '500' => new \OpenApi\Attributes\Response(description: 'Server Error'),
             ],
         // 可添加更多通用参数
         // description: $route->description,
@@ -81,6 +81,6 @@ class InjectRoutesProcessor
         // 生成更规范的operationId
         $path = trim($route->uri, '/');
         $path = str_replace(['/', '{', '}'], ['-', '', ''], $path);
-        return $path . '-' . $method;
+        return md5($path . '-' . $method);
     }
 }

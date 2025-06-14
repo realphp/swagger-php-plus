@@ -22,7 +22,7 @@ class DocGenerator extends Generator
         parent::__construct($logger);
         $this->routeMatcher = $routeMatcher;
         $this->routeExtractor = new RouteExtractor();
-        $this->addRouteProcessor();
+
     }
 
     public function generate(iterable $sources, ?\OpenApi\Analysis $analysis = null, bool $validate = true): ?\OpenApi\Annotations\OpenApi
@@ -57,21 +57,16 @@ class DocGenerator extends Generator
     private function extractRoutes(): array
     {
         $rawRoutes = $this->routeMatcher->getRoutes();
-
         $this->log(sprintf('Found %d raw routes from matcher', count($rawRoutes)));
-
         $processedRoutes = [];
         foreach ($rawRoutes as $route) {
             $processedRoute = $this->routeExtractor->processRoute($route);
-
             if ($processedRoute instanceof RouteInfo) {
                 $processedRoutes[] = $processedRoute;
             } else {
                 $this->log('Route extraction failed for: ' . get_class($route), 'warning');
             }
-            break;
         }
-
         return $processedRoutes;
     }
 
